@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bios Atelier — Public Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Fraunces:ital,wght@1,500;1,600&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFAF6; --paper-alt:#F1EFE5; --ink:#15151F; --ink-soft:#5B5B68;
+    --cyan:#0FC4D6; --magenta:#E8399F; --purple:#7B54FF; --marigold:#FFAE10;
+    --card:#FFFFFF; --r:18px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'Work Sans',sans-serif; font-size:16.5px; line-height:1.55; -webkit-font-smoothing:antialiased;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation-duration:.001ms!important; transition-duration:.001ms!important;} }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; font-weight:700; line-height:1.06; margin:0; letter-spacing:-0.01em;}
+  em{font-family:'Fraunces',serif; font-style:italic; font-weight:600;}
+  .c-cyan{color:var(--cyan);} .c-mag{color:var(--magenta);} .c-purp{color:var(--purple);} .c-mar{color:var(--marigold);}
+  .mono{font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:.09em;}
+  a{color:inherit;} img,svg{display:block; max-width:100%;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 26px;}
+  section{padding:96px 0; position:relative;}
+  @media (max-width:720px){ section{padding:60px 0;} }
+
+  .blob-bg{overflow:hidden;}
+  .blob-bg::before{
+    content:""; position:absolute; inset:-15%; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(36% 30% at 10% 15%, rgba(15,196,214,.30), transparent 70%),
+      radial-gradient(32% 28% at 90% 10%, rgba(232,57,159,.26), transparent 70%),
+      radial-gradient(38% 32% at 78% 90%, rgba(123,84,255,.24), transparent 70%),
+      radial-gradient(26% 22% at 15% 90%, rgba(255,174,16,.24), transparent 70%);
+  }
+  .blob-bg > *{position:relative; z-index:1;}
+
+  .tag{display:inline-flex; align-items:center; gap:7px; font-size:11.5px; padding:7px 14px; border:2.5px solid var(--ink); border-radius:100px; background:var(--card);}
+  .tag.cyan{border-color:var(--cyan); color:#087783;}
+  .tag.magenta{border-color:var(--magenta); color:#9c1e6e;}
+  .tag.purple{border-color:var(--purple); color:#4f31c9;}
+  .tag.marigold{border-color:var(--marigold); color:#a5680a;}
+
+  .card{background:var(--card); border:2.5px solid var(--ink); border-radius:var(--r); box-shadow:6px 7px 0 rgba(21,21,31,0.12);}
+  .card.tilt-l{transform:rotate(-1.1deg);}
+  .card.tilt-r{transform:rotate(1.1deg);}
+
+  header{position:sticky; top:0; z-index:60; background:#FFFFFF; border-bottom:2.5px solid var(--ink);}
+  nav{display:flex; align-items:center; justify-content:space-between; padding:12px 26px; max-width:1180px; margin:0 auto;}
+  .brand{display:flex; align-items:center; gap:10px; text-decoration:none;}
+  .brand img{height:46px; width:auto;}
+  .brand span{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px;}
+  .navpill{display:flex; align-items:center; gap:3px; border:2.5px solid var(--ink); border-radius:100px; padding:5px; background:var(--card);}
+  .navpill a{text-decoration:none; font-size:13px; font-weight:600; padding:9px 14px; border-radius:100px; color:var(--ink-soft);}
+  .navpill a:hover{color:var(--ink); background:var(--paper-alt);}
+  .navpill a:focus-visible, .btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{outline:2.5px solid var(--purple); outline-offset:2px;}
+  .btn{display:inline-flex; align-items:center; gap:8px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; padding:13px 24px; border-radius:100px; border:2.5px solid var(--ink); background:var(--ink); color:var(--paper); text-decoration:none; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease; box-shadow:4px 5px 0 rgba(21,21,31,.18);}
+  .btn:hover{transform:translate(-2px,-2px); box-shadow:6px 7px 0 rgba(21,21,31,.22);}
+  .btn.pink{background:var(--magenta);}
+  .btn.ghost{background:var(--card); color:var(--ink);}
+  .burger{display:none; background:var(--card); border:2.5px solid var(--ink); border-radius:10px; padding:9px 11px; cursor:pointer;}
+  .loc-toggle{display:flex; gap:3px; border:2.5px solid var(--ink); border-radius:100px; padding:4px; background:var(--card);}
+  .loc-btn{border:none; background:transparent; padding:8px 13px; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px; cursor:pointer; color:var(--ink-soft); white-space:nowrap;}
+  .loc-btn.active{background:var(--cyan); color:#fff;}
+  @media (max-width:980px){ .loc-toggle{display:none;} }
+  @media (max-width:880px){
+    .navpill{position:fixed; inset:70px 20px auto 20px; flex-direction:column; align-items:stretch; padding:10px; opacity:0; pointer-events:none; transform:translateY(-8px); transition:opacity .2s, transform .2s;}
+    .navpill.open{opacity:1; pointer-events:auto; transform:translateY(0);}
+    .navpill a{padding:12px 16px;}
+    .burger{display:flex;} .navcta{display:none;}
+  }
+  @media (min-width:881px){ .navcta{display:inline-flex;} }
+
+  .hero-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:50px; align-items:center; padding-top:16px;}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+  .hero h1{font-size:clamp(36px,5.4vw,62px);}
+  .hero p.lede{font-size:18px; color:var(--ink-soft); max-width:48ch; margin:20px 0 30px;}
+  .hero-ctas{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:30px;}
+  .facts{display:flex; gap:12px; flex-wrap:wrap;}
+  .fact-chip{display:flex; align-items:center; gap:9px; border:2.5px solid var(--ink); border-radius:14px; padding:10px 14px; background:var(--card); font-size:13px;}
+  .fact-chip b{display:block; font-family:'Space Grotesk',sans-serif; font-size:14.5px;}
+  .fact-chip b sup{font-size:9px; margin-left:1px;}
+  .fact-chip .mono{font-size:9.5px; color:var(--ink-soft);}
+
+  .logo-card{padding:30px; text-align:center;}
+  .logo-card img{max-width:280px; margin:0 auto 14px;}
+  .logo-card p{font-size:13px; color:var(--ink-soft); margin:0;}
+
+  .phil-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:40px;}
+  @media (max-width:860px){ .phil-grid{grid-template-columns:1fr;} }
+  .phil-card{padding:26px 22px;}
+  .icon-badge{width:50px; height:50px; border-radius:14px; border:2.5px solid var(--ink); display:flex; align-items:center; justify-content:center; margin-bottom:16px;}
+  .phil-card h3{font-size:19px; margin-bottom:10px;}
+  .phil-card p{font-size:14.5px; color:var(--ink-soft); margin:0;}
+
+  .topics-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:26px;}
+  @media (max-width:760px){ .topics-grid{grid-template-columns:1fr 1fr;} }
+  .topic-chip{display:flex; align-items:center; gap:10px; border:2.5px solid var(--ink); border-radius:14px; padding:14px 16px; background:var(--card); font-weight:600; font-size:13.5px;}
+
+  .cycle-shell{display:grid; grid-template-columns:.42fr .58fr; gap:20px; margin-top:36px;}
+  @media (max-width:780px){ .cycle-shell{grid-template-columns:1fr;} }
+  .week-tab{display:flex; align-items:center; gap:14px; padding:16px 18px; border-radius:14px; border:2.5px solid var(--ink); cursor:pointer; margin-bottom:10px; background:var(--card);}
+  .week-tab.active{background:var(--paper-alt); box-shadow:4px 5px 0 rgba(21,21,31,.14);}
+  .week-tab .num{width:38px; height:38px; border-radius:10px; border:2.5px solid var(--ink); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Space Grotesk',sans-serif; font-weight:700;}
+  .week-tab strong{display:block; font-size:15px;}
+  .week-tab span.sub{font-size:12px; color:var(--ink-soft);}
+  .cycle-panel{padding:30px; display:none;}
+  .cycle-panel.active{display:block;}
+  .cycle-panel .tag{margin-bottom:14px;}
+  .cycle-panel h3{font-size:24px; margin-bottom:12px;}
+  .cycle-panel p.desc{color:var(--ink-soft); font-size:15px; margin-bottom:22px;}
+  .deliv{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media (max-width:560px){ .deliv{grid-template-columns:1fr;} }
+  .deliv-item{display:flex; gap:10px; align-items:flex-start; background:var(--paper-alt); border-radius:12px; padding:12px 14px; font-size:13.5px;}
+
+  .sample-groups{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:30px;}
+  @media (max-width:760px){ .sample-groups{grid-template-columns:1fr;} }
+  .group-card{padding:20px;}
+  .group-card .mono{font-size:10.5px;}
+  .group-card h4{font-size:17.5px; margin:8px 0 8px;}
+  .group-card p{margin:0; font-size:13.5px; color:var(--ink-soft);}
+
+  .gallery-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:30px;}
+  @media (max-width:760px){ .gallery-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:520px){ .gallery-grid{grid-template-columns:1fr;} }
+  .gallery-tile{border-radius:16px; overflow:hidden; border:2.5px solid var(--ink); background:var(--card);}
+  .gallery-tile img{width:100%; height:210px; object-fit:cover; display:block;}
+  .gallery-placeholder{width:100%; height:210px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:repeating-linear-gradient(135deg, var(--paper-alt) 0 14px, var(--paper) 14px 28px); color:var(--ink-soft); border-bottom:2.5px dashed var(--ink);}
+  .gallery-cap{padding:12px 14px;}
+  .gallery-cap .mono{font-size:9.5px; color:var(--ink-soft);}
+  .gallery-cap h5{font-family:'Space Grotesk',sans-serif; font-size:14.5px; margin:4px 0 0;}
+
+  .sandbox-toggle{display:flex; gap:8px; border:2.5px solid var(--ink); border-radius:100px; padding:5px; background:var(--card); width:fit-content; margin:20px 0 26px;}
+  .sandbox-toggle button{border:none; background:transparent; padding:10px 18px; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px; cursor:pointer; color:var(--ink-soft);}
+  .sandbox-toggle button.active{background:var(--magenta); color:#fff;}
+  .sandbox-grid{display:grid; grid-template-columns:1fr .5fr; gap:20px;}
+  @media (max-width:860px){ .sandbox-grid{grid-template-columns:1fr;} }
+  .sandbox-stage{padding:26px; min-height:380px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;}
+  .sandbox-side .card{padding:20px; margin-bottom:14px;}
+  .stat-row{display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-top:1px dashed #cfcdbf;}
+  .stat-row:first-child{border-top:none;}
+  .stat-row b{font-family:'Space Mono',monospace; color:var(--purple);}
+  #paintCanvas{border:2.5px solid var(--ink); border-radius:12px; background:#fff; touch-action:none; cursor:crosshair;}
+  .palette{display:flex; gap:8px; flex-wrap:wrap;}
+  .swatch{width:28px; height:28px; border-radius:50%; border:2.5px solid var(--ink); cursor:pointer;}
+  .swatch.selected{outline:3px solid var(--purple); outline-offset:2px;}
+
+  .team-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:30px;}
+  @media (max-width:800px){ .team-grid{grid-template-columns:1fr;} }
+  .team-card{padding:20px; text-align:left; display:flex; gap:14px; align-items:flex-start;}
+  .avatar{width:46px; height:46px; border-radius:50%; border:2.5px solid var(--ink); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .team-card h4{font-size:15.5px; margin:0 0 2px;}
+  .team-card .mono{font-size:10px; color:var(--purple); display:block; margin-bottom:8px;}
+  .team-card p{font-size:13px; color:var(--ink-soft); margin:0;}
+
+  .sponsor-wrap{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:30px;}
+  @media (max-width:800px){ .sponsor-wrap{grid-template-columns:1fr;} }
+  .sponsor-wrap .card{padding:28px;}
+  input[type=range]{width:100%; accent-color:var(--magenta);}
+  .big-num{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:40px; color:var(--magenta);}
+
+  .join-grid{display:grid; grid-template-columns:1fr .8fr; gap:30px; margin-top:30px; align-items:start;}
+  @media (max-width:860px){ .join-grid{grid-template-columns:1fr;} }
+  form.join-form{padding:28px; display:flex; flex-direction:column; gap:16px;}
+  label{font-family:'Space Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); display:block; margin-bottom:6px;}
+  input[type=text], input[type=email], select{width:100%; padding:12px 14px; border:2.5px solid var(--ink); border-radius:10px; background:#fff; font-family:'Work Sans',sans-serif; font-size:14.5px; color:var(--ink);}
+  .aura-row{display:flex; gap:10px; align-items:center;}
+  .form-status{font-size:13.5px; min-height:18px; color:#0a7a55; font-weight:600;}
+
+  .id-card{border:2.5px dashed var(--ink); border-radius:20px; padding:22px; position:relative; background:linear-gradient(135deg,#fff,var(--paper-alt));}
+  .id-card::before, .id-card::after{content:""; position:absolute; width:22px; height:22px; background:var(--paper); border:2.5px dashed var(--ink); border-radius:50%; top:50%; transform:translateY(-50%);}
+  .id-card::before{left:-13px;} .id-card::after{right:-13px;}
+  .id-photo{position:relative; width:100px; height:100px; margin:14px auto; border-radius:14px; background:var(--paper-alt); display:flex; align-items:center; justify-content:center;}
+  .id-photo .corner{position:absolute; width:16px; height:16px; border:2.5px solid var(--ink);}
+  .id-photo .corner.tl{top:-4px; left:-4px; border-right:none; border-bottom:none;}
+  .id-photo .corner.tr{top:-4px; right:-4px; border-left:none; border-bottom:none;}
+  .id-photo .corner.bl{bottom:-4px; left:-4px; border-right:none; border-top:none;}
+  .id-photo .corner.br{bottom:-4px; right:-4px; border-left:none; border-top:none;}
+  .id-stats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0;}
+  .id-stat{border:2px solid var(--ink); border-radius:10px; padding:8px 10px; text-align:center;}
+  .id-stat span{display:block; font-size:8.5px; color:var(--ink-soft);}
+  .id-stat b{font-family:'Space Grotesk',sans-serif; font-size:13px;}
+  .id-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;}
+  .id-top .mono{font-size:10px;}
+  #idDot{width:12px; height:12px; border-radius:50%; border:2.5px solid var(--ink);}
+  #idName{font-size:22px; margin:0 0 4px;}
+  #idGrade{font-size:12.5px; color:var(--ink-soft); margin:0 0 18px;}
+  .id-strip{height:2px; background:repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 14px); margin-bottom:14px;}
+  .id-foot{display:flex; justify-content:space-between; font-size:10px;}
+
+  footer{border-top:2.5px solid var(--ink); padding:44px 0 26px;}
+  .foot-grid{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+  .foot-brand{display:flex; align-items:center; gap:10px;}
+  .foot-brand img{height:30px;}
+  .foot-brand span{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px;}
+  .fineprint{margin-top:20px; font-size:11.5px; color:var(--ink-soft); font-family:'Space Mono',monospace;}
+
+  .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a class="brand" href="#top">
+      <img src="logo-icon.webp" alt="Bios Atelier logo">
+      <span>Bios Atelier</span>
+    </a>
+    <div class="navpill" id="navpill">
+      <a href="#mission">Mission</a>
+      <a href="#topics">Topics</a>
+      <a href="#cycle">The cycle</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#sandbox">Sandbox</a>
+      <a href="#support">Support</a>
+      <a class="btn pink navcta" href="#join">Join the club</a>
+    </div>
+    <div class="loc-toggle" id="locToggle">
+      <button class="loc-btn active" data-loc="Sfax">📍 Sfax</button>
+      <button class="loc-btn" data-loc="Hofuf">📍 Hofuf</button>
+    </div>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+      <svg width="18" height="14" viewBox="0 0 18 14"><path d="M0 1h18M0 7h18M0 13h18" stroke="#15151F" stroke-width="2"/></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="top">
+
+  <section class="blob-bg">
+    <div class="wrap hero-grid">
+      <div class="hero">
+        <span class="tag cyan mono">Public club · student-run</span>
+        <h1 style="margin-top:18px;">Where <em class="c-cyan">science</em> meets <em class="c-mag">creative art</em>.</h1>
+        <p class="lede">Bios Atelier fills the gap where AP classes don't exist. Every month, students research a topic, teach it to each other, then build it by hand — and yes, it makes a genuinely good portfolio piece too.</p>
+        <div class="hero-ctas">
+          <a class="btn pink" href="#join">Join the next cycle</a>
+          <a class="btn ghost" href="#cycle">See how a month works</a>
+        </div>
+        <div class="facts">
+          <div class="fact-chip"><div><span class="mono">Cost</span><b>~10 DT / mo</b></div></div>
+          <div class="fact-chip"><div><span class="mono">Open to</span><b>Middle school – 4th year</b></div></div>
+          <div class="fact-chip"><div><span class="mono">Format</span><b>Hands-on, always</b></div></div>
+        </div>
+      </div>
+
+      <div class="card logo-card reveal tilt-r">
+        <img src="logo-full.webp" alt="Bios Atelier full logo">
+        <p>Science and art, fused into one mark — just like the club.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="mission" class="blob-bg">
+    <div class="wrap">
+      <span class="tag magenta mono reveal">Why we exist</span>
+      <h2 class="reveal" style="margin-top:16px; max-width:20ch; font-size:clamp(28px,3.6vw,42px);">Built for the AP class our region never got.</h2>
+      <p class="reveal" style="max-width:62ch; color:var(--ink-soft); font-size:17px; margin-top:16px;">There's no AP Biology, Chemistry, or Studio Art nearby — so students built the version they wished existed. It's real academic rigor with your hands actually in the material, and it happens to build the kind of concrete, talk-about-it-in-an-interview portfolio that matters later, without ever feeling like test prep.</p>
+
+      <div class="phil-grid">
+        <div class="card phil-card reveal">
+          <div class="icon-badge" style="background:#DFF6F6;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="#0FC4D6" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="4.5" stroke="#0FC4D6" stroke-width="2"/></svg></div>
+          <h3>Science + art, actually merged</h3>
+          <p>Models shouldn't just be memorized. Sculpting a lung or wiring a balloon diaphragm builds understanding a worksheet can't.</p>
+        </div>
+        <div class="card phil-card reveal">
+          <div class="icon-badge" style="background:#FDE3F1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h13" stroke="#E8399F" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h3>Real presenting practice</h3>
+          <p>Every student teaches the room a 10-minute slice of the topic — the exact skill that carries into college interviews and beyond.</p>
+        </div>
+        <div class="card phil-card reveal">
+          <div class="icon-badge" style="background:#FFF1D6;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 19V9l8-5 8 5v10" stroke="#FFAE10" stroke-width="2" stroke-linejoin="round"/><path d="M9 19v-6h6v6" stroke="#FFAE10" stroke-width="2"/></svg></div>
+          <h3>A portfolio worth keeping</h3>
+          <p>Nine months, nine exhibits. By spring you'll have a shelf of real work and a stack of talks you actually gave.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="topics" style="background:var(--paper-alt);">
+    <div class="wrap">
+      <span class="tag purple mono reveal">Not just biology</span>
+      <h2 class="reveal" style="margin-top:16px; max-width:18ch; font-size:clamp(26px,3.2vw,38px);">Any scientific topic the group votes for.</h2>
+      <p class="reveal" style="max-width:58ch; color:var(--ink-soft); font-size:15.5px; margin-top:12px;">The respiratory system is just one month's pick. Past and future topics span the board:</p>
+      <div class="topics-grid">
+        <div class="topic-chip reveal">🪐 Astrophysics</div>
+        <div class="topic-chip reveal">🧠 Neuroscience</div>
+        <div class="topic-chip reveal">🧪 Material chemistry</div>
+        <div class="topic-chip reveal">🌱 Botany</div>
+        <div class="topic-chip reveal">⚛️ Quantum physics</div>
+        <div class="topic-chip reveal">🏛️ Bio-architecture</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cycle" class="blob-bg">
+    <div class="wrap">
+      <span class="tag cyan mono reveal">The 4-week loop</span>
+      <h2 class="reveal" style="margin-top:16px; max-width:16ch; font-size:clamp(28px,3.6vw,42px);">One topic. Four weeks. One exhibit.</h2>
+      <div class="cycle-shell">
+        <div>
+          <div class="week-tab active" data-week="1"><div class="num">01</div><div><strong>Brainstorm & sketch</strong><span class="sub">Pick the topic, form teams</span></div></div>
+          <div class="week-tab" data-week="2"><div class="num">02</div><div><strong>Present</strong><span class="sub">10-minute team talks</span></div></div>
+          <div class="week-tab" data-week="3"><div class="num">03</div><div><strong>Studio</strong><span class="sub">Build it by hand</span></div></div>
+          <div class="week-tab" data-week="4"><div class="num">04</div><div><strong>Exhibit</strong><span class="sub">Public showcase</span></div></div>
+        </div>
+        <div class="card">
+          <div class="cycle-panel active" data-panel="1">
+            <span class="tag mono">Week 1 · goal</span>
+            <h3>Brainstorm & project sketching</h3>
+            <p class="desc">The club votes on this month's topic and splits into small teams. Everyone starts reading and sketching what their build might look like.</p>
+            <div class="deliv">
+              <div class="deliv-item">✅ Vote on the month's topic</div>
+              <div class="deliv-item">✅ Form teams of 2–4</div>
+              <div class="deliv-item">✅ First sketches of each build</div>
+              <div class="deliv-item">✅ Assign presentation angles</div>
+            </div>
+          </div>
+          <div class="cycle-panel" data-panel="2">
+            <span class="tag mono">Week 2 · goal</span>
+            <h3>Presentation week</h3>
+            <p class="desc">Each team gives a 10-minute presentation on their slice of the topic. Everyone leaves knowing the whole subject, not just their piece of it.</p>
+            <div class="deliv">
+              <div class="deliv-item">✅ 10-minute team talks</div>
+              <div class="deliv-item">✅ Peer Q&A after each one</div>
+              <div class="deliv-item">✅ Notes for the studio week</div>
+              <div class="deliv-item">✅ Materials list finalized</div>
+            </div>
+          </div>
+          <div class="cycle-panel" data-panel="3">
+            <span class="tag mono">Week 3 · goal</span>
+            <h3>Studio week</h3>
+            <p class="desc">Free-form making time — clay, balloons, canvas, wire, whatever the topic calls for. This is the week nobody wants to leave early.</p>
+            <div class="deliv">
+              <div class="deliv-item">✅ Sculpting / building</div>
+              <div class="deliv-item">✅ Painting & finishing</div>
+              <div class="deliv-item">✅ Group crit halfway through</div>
+              <div class="deliv-item">✅ Prep exhibit labels</div>
+            </div>
+          </div>
+          <div class="cycle-panel" data-panel="4">
+            <span class="tag mono">Week 4 · goal</span>
+            <h3>Showcase & exhibition</h3>
+            <p class="desc">A short public showcase of everyone's work — sometimes with a visiting scientist or artist to see what the room built.</p>
+            <div class="deliv">
+              <div class="deliv-item">✅ Set up the exhibit wall</div>
+              <div class="deliv-item">✅ Short public walkthroughs</div>
+              <div class="deliv-item">✅ Guest Q&A, if scheduled</div>
+              <div class="deliv-item">✅ Vote on next month's topic</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--paper-alt);">
+    <div class="wrap">
+      <span class="tag magenta mono reveal">Example cycle</span>
+      <h2 class="reveal" style="margin-top:16px; max-width:20ch; font-size:clamp(26px,3.2vw,38px);">This month's topic: the respiratory system.</h2>
+      <div class="sample-groups">
+        <div class="card group-card reveal"><span class="mono c-cyan">Team A</span><h4>The lungs</h4><p>Gas exchange and alveoli, then a clay cross-section lung.</p></div>
+        <div class="card group-card reveal"><span class="mono c-mag">Team B</span><h4>The airway</h4><p>Mouth, trachea, epiglottis, then a working balloon diaphragm model.</p></div>
+        <div class="card group-card reveal"><span class="mono c-purp">Team C</span><h4>The whole system</h4><p>Full breathing mechanism, then a painted canvas cutaway.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GALLERY =================
+    HOW TO ADD A REAL PHOTO:
+    1. Upload your image file into an "images" folder next to this HTML file
+       (see the publishing guide for exactly how, via GitHub).
+    2. Copy one <div class="gallery-tile">...</div> block below.
+    3. Replace the <div class="gallery-placeholder">...</div> with:
+         <img src="images/YOUR-FILE-NAME.jpg" alt="Short description">
+    4. Update the caption title and month/team text.
+  =================================================== -->
+  <section id="gallery" class="blob-bg">
+    <div class="wrap">
+      <span class="tag marigold mono reveal">From the showcase wall</span>
+      <h2 class="reveal" style="margin-top:16px; max-width:18ch; font-size:clamp(26px,3.2vw,38px);">Gallery: our members' work.</h2>
+      <p class="reveal" style="color:var(--ink-soft); max-width:56ch; margin-top:10px;">Placeholders for now — swap these for real photos after your first exhibition. Instructions are in the file, and in the publishing guide.</p>
+      <div class="gallery-grid">
+        <div class="gallery-tile reveal">
+          <div class="gallery-placeholder"><span style="font-size:26px;">📷</span><span class="mono" style="font-size:10px;">Add your photo</span></div>
+          <div class="gallery-cap"><span class="mono">Plate I</span><h5>Clay lung cross-section</h5></div>
+        </div>
+        <div class="gallery-tile reveal">
+          <div class="gallery-placeholder"><span style="font-size:26px;">📷</span><span class="mono" style="font-size:10px;">Add your photo</span></div>
+          <div class="gallery-cap"><span class="mono">Plate II</span><h5>Balloon diaphragm model</h5></div>
+        </div>
+        <div class="gallery-tile reveal">
+          <div class="gallery-placeholder"><span style="font-size:26px;">📷</span><span class="mono" style="font-size:10px;">Add your photo</span></div>
+          <div class="gallery-cap"><span class="mono">Plate III</span><h5>Painted respiratory canvas</h5></div>
+        </div>
+        <div class="gallery-tile reveal">
+          <div class="gallery-placeholder"><span style="font-size:26px;">📷</span><span class="mono" style="font-size:10px;">Add your photo</span></div>
+          <div class="gallery-cap"><span class="mono">Plate IV</span><h5>Add a caption</h5></div>
+        </div>
+        <div class="gallery-tile reveal">
+          <div class="gallery-placeholder"><span style="font-size:26px;">📷</span><span class="mono" style="font-size:10px;">Add your photo</span></div>
+          <div class="gallery-cap"><span class="mono">Plate V</span><h5>Add a caption</h5></div>
+        </div>
+        <div class="gallery-tile reveal">
+          <div class="gallery-placeholder"><span style="font-size:26px;">📷</span><span class="mono" style="font-size:10px;">Add your photo</span></div>
+          <div class="gallery-cap"><span class="mono">Plate VI</span><h5>Add a caption</h5></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sandbox">
+    <div class="wrap">
+      <span class="tag cyan mono reveal">Try it yourself</span>
+      <h2 class="reveal" style="margin-top:16px; max-width:16ch; font-size:clamp(26px,3.2vw,38px);">Sci-art sandbox.</h2>
+      <p class="reveal" style="color:var(--ink-soft); max-width:56ch; margin-top:10px;">A tiny taste of week 3. Play with lung physics, or grab a brush and paint your own version.</p>
+
+      <div class="sandbox-toggle">
+        <button id="tabLab" class="active">🫁 Lungs lab</button>
+        <button id="tabPaint">🎨 Paint canvas</button>
+      </div>
+
+      <div class="sandbox-grid">
+        <div class="card sandbox-stage" id="labStage">
+          <svg id="lungSvg" width="200" height="230" viewBox="0 0 200 230">
+            <defs>
+              <radialGradient id="lungGradL" cx="35%" cy="25%" r="80%">
+                <stop offset="0%" stop-color="#F2FDFC"/>
+                <stop offset="55%" stop-color="#BFEFEC"/>
+                <stop offset="100%" stop-color="#87D6D1"/>
+              </radialGradient>
+              <radialGradient id="lungGradR" cx="65%" cy="25%" r="80%">
+                <stop offset="0%" stop-color="#F2FDFC"/>
+                <stop offset="55%" stop-color="#BFEFEC"/>
+                <stop offset="100%" stop-color="#87D6D1"/>
+              </radialGradient>
+              <filter id="lungShadow" x="-40%" y="-40%" width="180%" height="180%">
+                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#15151F" flood-opacity="0.22"/>
+              </filter>
+            </defs>
+
+            <!-- faint ribs for depth -->
+            <g stroke="#DAD7C8" stroke-width="3" fill="none" opacity="0.7">
+              <path d="M18 70 Q100 55 182 70"/>
+              <path d="M14 100 Q100 84 186 100"/>
+              <path d="M14 132 Q100 118 186 132"/>
+              <path d="M20 162 Q100 150 180 162"/>
+            </g>
+
+            <!-- trachea with cartilage rings -->
+            <g stroke="#15151F" stroke-width="3.5" stroke-linecap="round">
+              <line x1="93" y1="6" x2="93" y2="52"/>
+              <line x1="107" y1="6" x2="107" y2="52"/>
+              <line x1="95" y1="14" x2="105" y2="14"/>
+              <line x1="95" y1="24" x2="105" y2="24"/>
+              <line x1="95" y1="34" x2="105" y2="34"/>
+              <line x1="95" y1="44" x2="105" y2="44"/>
+            </g>
+            <!-- bronchi -->
+            <path d="M97 50 C80 60, 68 68, 58 84 M103 50 C120 60, 132 68, 142 84" stroke="#15151F" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+            <g id="lungL" style="transform-origin:62px 130px; transition:transform .45s ease;" filter="url(#lungShadow)">
+              <path d="M100 55 C68 66, 46 88, 40 130 C36 168 58 192 86 184 C104 179 100 118 100 55 Z" fill="url(#lungGradL)" stroke="#15151F" stroke-width="3.5"/>
+              <path d="M50 128 C64 118, 80 124, 90 144" fill="none" stroke="#6BC2BD" stroke-width="2.5" opacity="0.8"/>
+              <circle cx="60" cy="105" r="5" fill="#fff" opacity="0.35"/>
+              <circle cx="72" cy="150" r="6" fill="#fff" opacity="0.3"/>
+              <circle cx="55" cy="145" r="4" fill="#fff" opacity="0.3"/>
+            </g>
+            <g id="lungR" style="transform-origin:138px 130px; transition:transform .45s ease;" filter="url(#lungShadow)">
+              <path d="M100 55 C132 66, 154 88, 160 130 C164 168 142 192 114 184 C96 179 100 118 100 55 Z" fill="url(#lungGradR)" stroke="#15151F" stroke-width="3.5"/>
+              <path d="M150 128 C136 118, 120 124, 110 144" fill="none" stroke="#6BC2BD" stroke-width="2.5" opacity="0.8"/>
+              <path d="M146 152 C136 146, 124 149, 116 160" fill="none" stroke="#6BC2BD" stroke-width="2" opacity="0.7"/>
+              <circle cx="140" cy="105" r="5" fill="#fff" opacity="0.35"/>
+              <circle cx="128" cy="150" r="6" fill="#fff" opacity="0.3"/>
+              <circle cx="145" cy="145" r="4" fill="#fff" opacity="0.3"/>
+            </g>
+
+            <g id="diaphragm" style="transition:transform .45s ease;">
+              <path d="M28 190 Q100 210 172 190" stroke="#15151F" stroke-width="5" fill="none" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="sandbox-side" id="labSide">
+          <div class="card">
+            <div class="stat-row"><span>Breath cycle</span><b id="statCycle">0</b></div>
+            <div class="stat-row"><span>Lung volume</span><b id="statVolume">500 cc</b></div>
+            <div class="stat-row"><span>O₂ saturation</span><b id="statO2">98%</b></div>
+          </div>
+          <button class="btn pink" id="breatheBtn" style="width:100%; justify-content:center;">Trigger inhale</button>
+        </div>
+
+        <div class="card sandbox-stage" id="paintStage" style="display:none;">
+          <canvas id="paintCanvas" width="320" height="320"></canvas>
+        </div>
+        <div class="sandbox-side" id="paintSide" style="display:none;">
+          <div class="card">
+            <label style="margin-bottom:10px;">Brush color</label>
+            <div class="palette">
+              <div class="swatch selected" style="background:#0FC4D6" data-color="#0FC4D6"></div>
+              <div class="swatch" style="background:#E8399F" data-color="#E8399F"></div>
+              <div class="swatch" style="background:#7B54FF" data-color="#7B54FF"></div>
+              <div class="swatch" style="background:#FFAE10" data-color="#FFAE10"></div>
+              <div class="swatch" style="background:#15151F" data-color="#15151F"></div>
+            </div>
+            <label style="margin:16px 0 6px;">Brush size</label>
+            <input type="range" id="brushSize" min="2" max="24" value="6">
+          </div>
+          <button class="btn ghost" id="clearCanvas" style="width:100%; justify-content:center;">Clear canvas</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="support" class="blob-bg" style="background:var(--paper-alt);">
+    <div class="wrap">
+      <span class="tag mono reveal">Who runs it</span>
+      <h2 class="reveal" style="margin-top:16px; max-width:16ch; font-size:clamp(26px,3.2vw,38px);">Run by students, for students.</h2>
+      <p class="reveal" style="color:var(--ink-soft); max-width:56ch; margin-top:10px;">Roles below are real — names are left off on purpose while the club is getting off the ground. Swap in real names any time; the guide shows you exactly where.</p>
+      <div class="team-grid">
+        <div class="card team-card reveal">
+          <div class="avatar" style="background:#DFF6F6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2 2 7l10 5 10-5-10-5Z" stroke="#0FC4D6" stroke-width="2" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#0FC4D6" stroke-width="2" stroke-linejoin="round"/></svg></div>
+          <div><h4>Founder &amp; President</h4><span class="mono">Club leadership</span><p>Started the club and oversees each cycle end to end.</p></div>
+        </div>
+        <div class="card team-card reveal">
+          <div class="avatar" style="background:#FDE3F1;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 19.5V6a2 2 0 0 1 2-2h12v15" stroke="#E8399F" stroke-width="2"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H18" stroke="#E8399F" stroke-width="2"/></svg></div>
+          <div><h4>Head of Curriculum</h4><span class="mono">Topics &amp; presentations</span><p>Plans monthly topics and coordinates presentation prep.</p></div>
+        </div>
+        <div class="card team-card reveal">
+          <div class="avatar" style="background:#FFF1D6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 20 21 4M14 20l7-7M3 13l7-7" stroke="#FFAE10" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div><h4>Materials &amp; Studio</h4><span class="mono">Week 3 lead</span><p>Sources clay, paint, and balloons, and runs the studio floor.</p></div>
+        </div>
+      </div>
+
+      <div class="sponsor-wrap">
+        <div class="card">
+          <span class="tag mono">Transparent, materials only</span>
+          <h3 style="margin-top:14px; font-size:22px;">Support a sci-art cohort</h3>
+          <p style="color:var(--ink-soft); font-size:14.5px; margin-top:10px;">Dues are 10 DT a student per month — clay, canvas, balloons, and the room. Nothing else. Sponsor one student or a whole team.</p>
+        </div>
+        <div class="card">
+          <label>Students sponsored — <span id="sponsorCount">1</span></label>
+          <input type="range" id="sponsorSlider" min="1" max="20" value="1">
+          <div style="margin-top:18px;">
+            <span class="mono">Monthly total</span>
+            <div class="big-num"><span id="sponsorTotal">10</span> DT</div>
+          </div>
+          <form id="sponsorForm" action="https://formspree.io/f/mrewrdkv" method="POST" style="margin-top:20px; padding-top:18px; border-top:1px dashed #cfcdbf;">
+            <label for="sponsorEmail">Want to sponsor? Leave your email</label>
+            <input type="email" id="sponsorEmail" name="email" required placeholder="you@email.com">
+            <input type="hidden" name="student_count" id="sponsorCountField" value="1">
+            <input type="hidden" name="monthly_total_dt" id="sponsorTotalField" value="10">
+            <input type="hidden" name="form_type" value="Sponsorship request">
+            <button class="btn ghost" id="sponsorSend" type="submit" style="width:100%; justify-content:center; margin-top:12px;">Send sponsorship request</button>
+            <p class="form-status" id="sponsorStatus" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="join" class="blob-bg">
+    <div class="wrap">
+      <span class="tag magenta mono reveal">Reserve a seat</span>
+      <h2 class="reveal" style="margin-top:16px; max-width:16ch; font-size:clamp(26px,3.2vw,38px);">Save your spot for the next cycle.</h2>
+      <div class="join-grid">
+        <form class="card join-form" id="joinForm" action="https://formspree.io/f/mrewrdkv" method="POST">
+          <div><label for="jname">Name</label><input id="jname" name="name" type="text" required placeholder="Your full name"></div>
+          <div><label for="jemail">Email</label><input id="jemail" name="email" type="email" required placeholder="you@email.com"></div>
+          <div><label for="jgrade">Grade level</label>
+            <select id="jgrade" name="grade">
+              <option>Middle school</option><option selected>1st year of high school</option><option>2nd year of high school</option><option>3rd year of high school</option><option>4th year of high school</option>
+            </select>
+          </div>
+          <div><label for="jscience">Science interest</label>
+            <select id="jscience" name="science_interest">
+              <option>Astrophysics</option><option>Neuroscience</option><option>Material Chemistry</option><option>Botany</option><option>Quantum Physics</option><option>Bio-Architecture</option>
+            </select>
+          </div>
+          <div><label for="jart">Preferred art medium</label>
+            <select id="jart" name="art_medium">
+              <option>Clay sculpture</option><option>Balloon models</option><option>Canvas painting</option><option>Mixed media</option>
+            </select>
+          </div>
+          <div>
+            <label>ID card color</label>
+            <div class="aura-row palette">
+              <div class="swatch selected" style="background:#0FC4D6" data-idcolor="#0FC4D6"></div>
+              <div class="swatch" style="background:#E8399F" data-idcolor="#E8399F"></div>
+              <div class="swatch" style="background:#7B54FF" data-idcolor="#7B54FF"></div>
+              <div class="swatch" style="background:#FFAE10" data-idcolor="#FFAE10"></div>
+            </div>
+          </div>
+          <button class="btn pink" type="submit" style="justify-content:center;">Reserve my spot</button>
+          <p class="form-status" id="formStatus" role="status"></p>
+        </form>
+
+        <div class="id-card" id="idCard">
+          <div class="id-top">
+            <div style="display:flex; align-items:center; gap:8px;"><span class="mono">Bios Atelier</span><div id="idDot" style="background:#0FC4D6;"></div></div>
+            <span class="tag mono" id="idChapter" style="padding:4px 11px; font-size:9.5px;">Sfax</span>
+          </div>
+          <span class="mono" style="font-size:9.5px; color:var(--ink-soft);">Member ID-pass</span>
+
+          <div class="id-photo">
+            <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+            <img src="logo-icon.webp" alt="" style="width:70%; opacity:.5;">
+          </div>
+
+          <div class="id-stats">
+            <div class="id-stat"><span class="mono">Joined</span><b id="idJoined">—</b></div>
+            <div class="id-stat"><span class="mono">Status</span><b>Pending</b></div>
+          </div>
+
+          <div class="id-strip"></div>
+          <span class="mono" style="font-size:9.5px; color:var(--ink-soft);">Member name</span>
+          <h4 id="idName">Your name</h4>
+          <p id="idGrade" style="margin-top:-2px;">1st year of high school</p>
+
+          <div class="id-stats" style="margin-top:14px;">
+            <div class="id-stat"><span class="mono">Science focus</span><b id="idScience">Astrophysics</b></div>
+            <div class="id-stat"><span class="mono">Art medium</span><b id="idArt">Clay sculpture</b></div>
+          </div>
+
+          <div class="id-strip"></div>
+          <div class="id-foot">
+            <svg width="90" height="24" viewBox="0 0 90 24">
+              <rect x="0" y="0" width="2" height="24" fill="#15151F"/><rect x="4" y="0" width="1" height="24" fill="#15151F"/><rect x="8" y="0" width="3" height="24" fill="#15151F"/><rect x="14" y="0" width="1" height="24" fill="#15151F"/><rect x="18" y="0" width="2" height="24" fill="#15151F"/><rect x="23" y="0" width="1" height="24" fill="#15151F"/><rect x="27" y="0" width="3" height="24" fill="#15151F"/><rect x="33" y="0" width="2" height="24" fill="#15151F"/><rect x="38" y="0" width="1" height="24" fill="#15151F"/><rect x="42" y="0" width="3" height="24" fill="#15151F"/><rect x="48" y="0" width="1" height="24" fill="#15151F"/><rect x="52" y="0" width="2" height="24" fill="#15151F"/><rect x="57" y="0" width="1" height="24" fill="#15151F"/><rect x="61" y="0" width="3" height="24" fill="#15151F"/><rect x="67" y="0" width="2" height="24" fill="#15151F"/><rect x="72" y="0" width="1" height="24" fill="#15151F"/><rect x="76" y="0" width="3" height="24" fill="#15151F"/><rect x="82" y="0" width="1" height="24" fill="#15151F"/><rect x="86" y="0" width="2" height="24" fill="#15151F"/>
+            </svg>
+            <span class="mono">No. 001</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="logo-icon.webp" alt="Bios Atelier logo">
+        <span>Bios Atelier</span>
+      </div>
+      <div class="navpill" style="position:static;">
+        <a href="#mission">Mission</a><a href="#gallery">Gallery</a><a href="#cycle">Cycle</a><a href="#support">Support</a>
+      </div>
+    </div>
+    <div class="fineprint">PUBLIC CLUB · STUDENT-RUN · MATERIALS-COST ONLY</div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.loc-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.loc-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const idChapter=document.getElementById('idChapter');
+      if(idChapter) idChapter.textContent = btn.dataset.loc;
+    });
+  });
+
+  const burger=document.getElementById('burger'), navpill=document.getElementById('navpill');
+  burger.addEventListener('click',()=>{const open=navpill.classList.toggle('open'); burger.setAttribute('aria-expanded',open);});
+  navpill.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{navpill.classList.remove('open'); burger.setAttribute('aria-expanded','false');}));
+
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  document.querySelectorAll('.week-tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.cycle-panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector('.cycle-panel[data-panel="'+tab.dataset.week+'"]').classList.add('active');
+    });
+  });
+
+  const tabLab=document.getElementById('tabLab'), tabPaint=document.getElementById('tabPaint');
+  const labStage=document.getElementById('labStage'), paintStage=document.getElementById('paintStage');
+  const labSide=document.getElementById('labSide'), paintSide=document.getElementById('paintSide');
+  tabLab.addEventListener('click',()=>{tabLab.classList.add('active'); tabPaint.classList.remove('active'); labStage.style.display='flex'; labSide.style.display='block'; paintStage.style.display='none'; paintSide.style.display='none';});
+  tabPaint.addEventListener('click',()=>{tabPaint.classList.add('active'); tabLab.classList.remove('active'); paintStage.style.display='flex'; paintSide.style.display='block'; labStage.style.display='none'; labSide.style.display='none';});
+
+  let cycle=0, breathing=false;
+  const lungL=document.getElementById('lungL'), lungR=document.getElementById('lungR'), diaphragm=document.getElementById('diaphragm');
+  const statCycle=document.getElementById('statCycle'), statVolume=document.getElementById('statVolume'), statO2=document.getElementById('statO2');
+  document.getElementById('breatheBtn').addEventListener('click',(e)=>{
+    if(breathing) return;
+    breathing=true;
+    const inhale = cycle % 2 === 0;
+    lungL.style.transform = inhale ? 'scale(1.15)' : 'scale(1)';
+    lungR.style.transform = inhale ? 'scale(1.15)' : 'scale(1)';
+    diaphragm.style.transform = inhale ? 'translateY(10px) scaleY(0.5)' : 'translateY(0) scaleY(1)';
+    statVolume.textContent = (inhale ? 2200 : 500) + ' cc';
+    statO2.textContent = (inhale ? 99 : 97) + '%';
+    e.target.textContent = inhale ? 'Trigger exhale' : 'Trigger inhale';
+    if(inhale){ cycle++; statCycle.textContent = cycle; }
+    setTimeout(()=>{breathing=false;}, 420);
+  });
+
+  const canvas=document.getElementById('paintCanvas'), ctx=canvas.getContext('2d');
+  ctx.strokeStyle='#0FC4D6'; ctx.lineWidth=6; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.save(); ctx.strokeStyle='#d8d6c8'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(160,40); ctx.lineTo(160,110);
+  ctx.moveTo(160,110); ctx.bezierCurveTo(120,120,90,160,85,220); ctx.bezierCurveTo(80,270,120,290,150,265); ctx.bezierCurveTo(160,250,160,150,160,110);
+  ctx.moveTo(160,110); ctx.bezierCurveTo(200,120,230,160,235,220); ctx.bezierCurveTo(240,270,200,290,170,265); ctx.bezierCurveTo(160,250,160,150,160,110);
+  ctx.stroke(); ctx.restore();
+  let drawing=false, curColor='#0FC4D6', curSize=6;
+  function pos(e){ const r=canvas.getBoundingClientRect(); const p=e.touches?e.touches[0]:e; return {x:p.clientX-r.left, y:p.clientY-r.top}; }
+  canvas.addEventListener('pointerdown',e=>{drawing=true; const p=pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y);});
+  canvas.addEventListener('pointermove',e=>{if(!drawing)return; const p=pos(e); ctx.strokeStyle=curColor; ctx.lineWidth=curSize; ctx.lineTo(p.x,p.y); ctx.stroke();});
+  window.addEventListener('pointerup',()=>drawing=false);
+  document.querySelectorAll('#paintSide .swatch').forEach(s=>s.addEventListener('click',()=>{
+    document.querySelectorAll('#paintSide .swatch').forEach(x=>x.classList.remove('selected'));
+    s.classList.add('selected'); curColor=s.dataset.color;
+  }));
+  document.getElementById('brushSize').addEventListener('input',e=>curSize=e.target.value);
+  document.getElementById('clearCanvas').addEventListener('click',()=>ctx.clearRect(0,0,canvas.width,canvas.height));
+
+  const sponsorSlider=document.getElementById('sponsorSlider'), sponsorCount=document.getElementById('sponsorCount'), sponsorTotal=document.getElementById('sponsorTotal');
+  const sponsorCountField=document.getElementById('sponsorCountField'), sponsorTotalField=document.getElementById('sponsorTotalField');
+  sponsorSlider.addEventListener('input',()=>{
+    sponsorCount.textContent=sponsorSlider.value;
+    sponsorTotal.textContent=sponsorSlider.value*10;
+    sponsorCountField.value=sponsorSlider.value;
+    sponsorTotalField.value=sponsorSlider.value*10;
+  });
+
+  document.getElementById('sponsorForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const form=e.target;
+    const status=document.getElementById('sponsorStatus');
+    const email=document.getElementById('sponsorEmail').value.trim();
+    if(!email || !email.includes('@')){ status.style.color='#b3261e'; status.textContent='Add a valid email first.'; return; }
+    status.style.color=var_soft();
+    status.textContent='Sending...';
+    fetch(form.action, { method:'POST', body:new FormData(form), headers:{'Accept':'application/json'} })
+      .then(res=>{
+        if(res.ok){
+          status.style.color='#0a7a55';
+          status.textContent = `Thanks — request for ${sponsorCount.textContent} student(s) sent. We'll follow up at ${email}.`;
+          form.reset(); sponsorSlider.value=1; sponsorCount.textContent='1'; sponsorTotal.textContent='10';
+        } else {
+          status.style.color='#b3261e';
+          status.textContent = 'Something went wrong — please try again.';
+        }
+      })
+      .catch(()=>{ status.style.color='#b3261e'; status.textContent='Network error — please try again.'; });
+  });
+  function var_soft(){ return '#5B5B68'; }
+
+  const jname=document.getElementById('jname'), jgrade=document.getElementById('jgrade');
+  const jscience=document.getElementById('jscience'), jart=document.getElementById('jart');
+  const idName=document.getElementById('idName'), idGrade=document.getElementById('idGrade'), idDot=document.getElementById('idDot'), idCard=document.getElementById('idCard');
+  const idScience=document.getElementById('idScience'), idArt=document.getElementById('idArt'), idJoined=document.getElementById('idJoined');
+  idJoined.textContent = new Date().toLocaleDateString(undefined, {month:'short', year:'numeric'});
+  jname.addEventListener('input',()=>idName.textContent = jname.value.trim() || 'Your name');
+  jgrade.addEventListener('change',()=>idGrade.textContent = jgrade.value);
+  jscience.addEventListener('change',()=>idScience.textContent = jscience.value);
+  jart.addEventListener('change',()=>idArt.textContent = jart.value);
+  document.querySelectorAll('[data-idcolor]').forEach(s=>s.addEventListener('click',()=>{
+    document.querySelectorAll('[data-idcolor]').forEach(x=>x.classList.remove('selected'));
+    s.classList.add('selected');
+    const c = s.dataset.idcolor;
+    idDot.style.background = c;
+    idCard.style.borderColor = c;
+    idCard.style.background = `linear-gradient(135deg, #fff, ${c}26)`;
+  }));
+
+  document.getElementById('joinForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const form=e.target;
+    const status=document.getElementById('formStatus');
+    const name=jname.value.trim();
+    status.style.color='#5B5B68';
+    status.textContent='Sending...';
+    fetch(form.action, { method:'POST', body:new FormData(form), headers:{'Accept':'application/json'} })
+      .then(res=>{
+        if(res.ok){
+          status.style.color='#0a7a55';
+          status.textContent = `Thanks${name?', '+name.split(' ')[0]:''} — you're on the list for the next cycle.`;
+          form.reset(); idName.textContent='Your name'; idGrade.textContent='1st year of high school'; idScience.textContent='Astrophysics'; idArt.textContent='Clay sculpture';
+        } else {
+          status.style.color='#b3261e';
+          status.textContent = 'Something went wrong — please try again.';
+        }
+      })
+      .catch(()=>{ status.style.color='#b3261e'; status.textContent='Network error — please try again.'; });
+  });
+</script>
+</body>
+</html>
